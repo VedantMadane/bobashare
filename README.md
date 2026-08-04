@@ -44,8 +44,7 @@ Docker (and compose).
 ### Docker
 
 The image is `ghcr.io/bbaovanc/bobashare:latest`. You can copy an example
-`compose.yaml` from [compose.example.yaml](compose.example.yaml), just delete
-the `build:` line and uncomment the `image:` line.
+`compose.yaml` from [compose.example.yaml](compose.example.yaml).
 
 ## Configuration
 

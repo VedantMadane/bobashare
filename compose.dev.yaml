@@ -1,7 +1,8 @@
 services:
   bobashare:
-    # replace latest with master to run the latest development version instead of release
-    image: ghcr.io/bbaovanc/bobashare:latest
+    #image: ghcr.io/bbaovanc/bobashare:latest
+    build: .
+    restart: always
     environment:
       - APP_BASE_URL=http://localhost:3000/
     volumes:
