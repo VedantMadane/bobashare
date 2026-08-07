@@ -215,11 +215,7 @@ pub fn str_to_duration(s: &str) -> Result<StdDuration, StrToDurationError> {
         return Err(StrToDurationError::Invalid);
     }
 
-    let count_end_idx = chars
-        .find(|(_, c)| c.is_ascii_digit())
-        .map_or(0, |(i, _)| i);
-    // index of first char of unit part
-    let unit_idx = count_end_idx + 1;
+    let unit_idx = s.find(|c: char| !c.is_ascii_digit()).unwrap_or(s.len());
 
     let count_str = &s[..unit_idx];
     let count = u64::from_str(count_str)?;
