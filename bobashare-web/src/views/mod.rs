@@ -12,6 +12,7 @@ use axum::{
 use chrono::TimeDelta;
 use http::header::{HeaderName, HeaderValue};
 use hyper::StatusCode;
+use tower::ServiceBuilder;
 use tower_http::set_header::SetResponseHeaderLayer;
 use tracing::{event, Level};
 use url::Url;
@@ -141,16 +142,22 @@ pub fn router() -> Router<&'static AppState> {
         HeaderName::from_static("x-robots-tag"),
         HeaderValue::from_static("noindex"),
     );
+    let content_security_policy = SetResponseHeaderLayer::overriding(
+        http::header::CONTENT_SECURITY_POLICY,
+        HeaderValue::from_static("default-src 'self'; img-src 'self' data:;"),
+    );
+    let display_pages_headers = ServiceBuilder::new()
+        .layer(x_robots_tag_no_index.clone())
+        .layer(content_security_policy.clone());
+
+    let display_pages_routes = Router::new()
+        .route("/{id}", get(display::display))
+        .route("/raw/{id}", get(display::raw))
+        .layer(display_pages_headers);
+
     Router::new()
         .route("/", get(upload::upload))
         .route("/paste/", get(upload::paste))
         .route("/about/", get(about::about))
-        .route(
-            "/{id}",
-            get(display::display).layer(x_robots_tag_no_index.clone()),
-        )
-        .route(
-            "/raw/{id}",
-            get(display::raw).layer(x_robots_tag_no_index.clone()),
-        )
+        .merge(display_pages_routes)
 }
