@@ -13,6 +13,7 @@ use syntect::{
 };
 use thiserror::Error;
 use tokio::sync::broadcast;
+use tracing::{event, instrument, Level};
 use url::Url;
 
 pub mod api;
@@ -244,6 +245,7 @@ pub enum RenderMarkdownWithSyntaxError {
 /// using [`syntect`].
 ///
 /// Takes in a [`SyntaxSet`] to use for highlighting.
+#[instrument(name = "render", skip(syntax_set, source), level = "debug")]
 pub fn render_markdown_with_syntax_set(
     source: &str,
     syntax_set: &SyntaxSet,
@@ -254,6 +256,11 @@ pub fn render_markdown_with_syntax_set(
     // the inner code
     while let Some(event) = parser.next() {
         match event {
+            // patch GHSA-g7gw-4888-mr65
+            Event::Html(s) | Event::InlineHtml(s) => {
+                event!(Level::TRACE, ?s, "removed raw HTML");
+            }
+
             Event::Start(Tag::CodeBlock(CodeBlockKind::Fenced(token))) => {
                 output.push(Event::Html("<pre class=\"highlight\">".into()));
                 let syntax = syntax_set

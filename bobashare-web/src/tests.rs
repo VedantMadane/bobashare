@@ -1,6 +1,6 @@
 // Unit tests for root functions in [`bobashare_web`]
 
-use crate::str_to_duration;
+use crate::{render_markdown_with_syntax_set, str_to_duration};
 
 #[test]
 fn no_number() {
@@ -49,4 +49,23 @@ fn large_counts() {
         str_to_duration("1440m").unwrap(),
         Duration::from_secs(1440 * 60),
     );
+}
+
+// Verify GHSA-g7gw-4888-mr65 is patched
+#[test]
+fn render_markdown_strip_raw_html() {
+    use syntect::parsing::SyntaxSet;
+    let syntax_set = SyntaxSet::load_defaults_newlines();
+
+    let input = r#"## boba
+
+<script>
+window.alert("hello");
+</script>
+
+s<i>ha</i>re<b>!!!</b>"#;
+    let expected = "<h2>boba</h2>\n<p>share!!!</p>\n";
+
+    let rendered = render_markdown_with_syntax_set(input, &syntax_set).unwrap();
+    assert_eq!(rendered, expected);
 }
