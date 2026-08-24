@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v0.2.18] - 2026-08-19
+
+### Security
+
+**This update patches a critical security vulnerability. All users must upgrade
+immediately.**
+
 ### Features
 
 - Support setting custom instance name with new `instance_name` config option
