@@ -142,22 +142,33 @@ pub fn router() -> Router<&'static AppState> {
         HeaderName::from_static("x-robots-tag"),
         HeaderValue::from_static("noindex"),
     );
-    let content_security_policy = SetResponseHeaderLayer::overriding(
+    let csp_normal = SetResponseHeaderLayer::overriding(
         http::header::CONTENT_SECURITY_POLICY,
         HeaderValue::from_static("default-src 'self'; img-src 'self' data:;"),
     );
-    let display_pages_headers = ServiceBuilder::new()
-        .layer(x_robots_tag_no_index.clone())
-        .layer(content_security_policy.clone());
-
-    let display_pages_routes = Router::new()
-        .route("/{id}", get(display::display))
-        .route("/raw/{id}", get(display::raw))
-        .layer(display_pages_headers);
+    let csp_sandbox = SetResponseHeaderLayer::overriding(
+        http::header::CONTENT_SECURITY_POLICY,
+        HeaderValue::from_static("sandbox;"),
+    );
 
     Router::new()
         .route("/", get(upload::upload))
         .route("/paste/", get(upload::paste))
         .route("/about/", get(about::about))
-        .merge(display_pages_routes)
+        .route(
+            "/{id}",
+            get(display::display).layer(
+                ServiceBuilder::new()
+                    .layer(x_robots_tag_no_index.clone())
+                    .layer(csp_normal),
+            ),
+        )
+        .route(
+            "/raw/{id}",
+            get(display::raw).layer(
+                ServiceBuilder::new()
+                    .layer(x_robots_tag_no_index.clone())
+                    .layer(csp_sandbox),
+            ),
+        )
 }
