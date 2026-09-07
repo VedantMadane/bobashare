@@ -7,12 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Security
+
+- Use `sandbox` Content-Security-Policy on raw file pages, to prevent malicious
+  HTML files from being possible to serve without downloading first
+
+
 ## [v0.2.18] - 2026-08-19
 
 ### Security
 
 **This update patches a critical security vulnerability. All users must upgrade
 immediately.**
+
+- Strip raw HTML tags when previewing markdown files
+  - This fixes a stored XSS where literal script tags in a markdown file would
+    be shown unmodified.
+- Implement Content-Security-Policy to block cross-origin content
+  - This additionally prevents embedding foreign images in the markdown preview,
+    so they must be placed as inline data blobs instead. Otherwise it opens the
+    door to being able to ip log users by simply previewing things.
 
 ### Features
 
