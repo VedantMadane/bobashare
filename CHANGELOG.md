@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Use `sandbox` Content-Security-Policy on raw file pages, to prevent malicious
   HTML files from being possible to serve without downloading first
+- Set `default-src 'none'` on raw pages to actually restrict resource loading
+  there too
+  - with previous behavior, it defaults to having no restrictions and allows
+    everything, apart from sandboxing
 
 
 ## [v0.2.18] - 2026-08-19

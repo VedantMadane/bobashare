@@ -149,7 +149,7 @@ pub fn router() -> Router<&'static AppState> {
     );
     let csp_sandbox = SetResponseHeaderLayer::overriding(
         http::header::CONTENT_SECURITY_POLICY,
-        HeaderValue::from_static("sandbox;"),
+        HeaderValue::from_static("sandbox; default-src 'none';"),
     );
 
     Router::new()
