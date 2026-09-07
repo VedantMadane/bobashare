@@ -337,7 +337,8 @@ impl FileBackend {
         &self,
         id: S,
     ) -> Result<ValidateResult, ValidateError> {
-        // ^ we're gonna have an ugly Ok() layer for actual valid/invalid :skull:
+        // ^ we're gonna have an ugly Ok() layer for actual valid/invalid
+        // :skull:
         let id = id.as_ref();
 
         // 1. check if there is an upload file
@@ -346,8 +347,8 @@ impl FileBackend {
             return InvalidReason::MissingFile.into();
         }
 
-        // 2, 3, 4, 5. check if there is a metadata file and if it's valid, and that
-        // there's no lock file
+        // 2, 3, 4, 5. check if there is a metadata file and if it's valid, and
+        // that there's no lock file
         let metadata = match self.read_upload_metadata(id).await {
             Ok(m) => m,
             Err(err) => match err {
